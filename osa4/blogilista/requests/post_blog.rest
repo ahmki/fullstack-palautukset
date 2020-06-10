@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "timo ihmemaassa",
-    "author": "jari sillanpää",
+    "title": "esa ihmemaassa",
+    "author": "kari sillanpää",
     "url": "fdfd.com",
     "likes": 5
 }
