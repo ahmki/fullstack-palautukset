@@ -4,7 +4,7 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 const logger = require('./utils/logger')
-require('dotenv').config();
+const config = require('./utils/config')
 
 const blogSchema = mongoose.Schema({
   title: String,
@@ -15,7 +15,7 @@ const blogSchema = mongoose.Schema({
 
 const Blog = mongoose.model('Blog', blogSchema)
 
-const mongoUrl = process.env.MONGODB_URI
+const mongoUrl = config.MONGODB_URI
 console.log('connecting')
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true})
   .then(() => {
@@ -48,7 +48,6 @@ app.post('/api/blogs', (request, response) => {
     })
 })
 
-const PORT = 3003
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`)
+app.listen(config.PORT, () => {
+  logger.info(`Server running on port ${config.PORT}`)
 })
