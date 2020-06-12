@@ -1,5 +1,11 @@
-const blogs = 
-[ 
+const Blog = require('../models/blog')
+
+const blogsInDb = async () => {
+  const blogsFromDb = await Blog.find({})
+  return blogsFromDb.map(blog => blog.toJSON())
+}
+
+const blogs = [ 
   { 
     _id: "5a422a851b54a676234d17f7",
     title: "React patterns",
@@ -63,5 +69,6 @@ const oneBlog = [
 
 module.exports = {
   blogs,
-  oneBlog
+  oneBlog,
+  blogsInDb
 }
