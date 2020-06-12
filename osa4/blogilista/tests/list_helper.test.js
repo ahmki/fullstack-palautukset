@@ -1,6 +1,11 @@
 const listHelper = require('../utils/list_helper')
+const supertest = require('supertest')
 const blogs = require('./for_testing').blogs
 const blog = require('./for_testing').oneBlog
+const mongoose = require('mongoose')
+const app = require('../app')
+
+const api = supertest(app)
 
 test('dummy returns one', () => {
   const blogs = []
@@ -25,4 +30,15 @@ describe('total likes', () => {
     const result = listHelper.favoriteBlog(blogs)
     expect(result).toEqual(blogs[2])
   })
+})
+
+test('blogs return as json', async () => {
+  await api 
+    .get('/api/blogs')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+})
+
+afterAll(() => {
+  mongoose.connection.close()
 })
