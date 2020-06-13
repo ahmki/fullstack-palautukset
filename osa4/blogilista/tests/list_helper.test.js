@@ -10,6 +10,11 @@ const api = supertest(app)
 
 const Blog = require('../models/blog')
 
+/*
+* Tehtävät 4.3 - 4.5 + 4.8 - 4.13
+*/
+
+
 test('dummy returns one', () => {
   const blogs = []
 
@@ -36,6 +41,7 @@ describe('total likes', () => {
 })
 
 describe('tests for blogs in db', () => {
+  // Poistetaan vanha tietokanta ja luodaan uusi ennen jokaista tietokannan testiä
   beforeEach(async () => {
 
     await Blog.deleteMany({})
@@ -75,6 +81,57 @@ describe('tests for blogs in db', () => {
 
     const blogLength = await blogDbContent()
     expect(blogLength.length).toBe(blogs.length + 1)
+  })
+
+  test('adding a blog with no likes', async () => {
+    const newBlog = {
+      title: "howtotest things",
+      author: "esa",
+      url: "aaaaaaaaraaaaaa.com",
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+    
+    const allBlogs = await blogDbContent()
+    const indexOfLatest = allBlogs.length - 1
+    expect(allBlogs[indexOfLatest].likes).toBe(0)
+  })
+
+  test('adding a blog with no title and url', async () => {
+    const newBlog = {
+      author: "esa",
+      likes: 0
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
+
+  test('deleting a blog', async () => {
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17f7')
+      .expect(204)
+    
+  }) 
+
+  test('modifying an existing blog', async () => {
+    const updatedBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 8
+    }
+
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17f7')
+      .send(updatedBlog)
+      .expect('Content-Type', /application\/json/)
   })
 })
 
