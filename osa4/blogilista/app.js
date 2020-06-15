@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 const config = require('./utils/config')
 const blogRouter = require('./controllers/blogs')
+const userRouter = require('./controllers/users')
 const bodyParser = require('body-parser')
 
 console.log('connecting')
@@ -18,9 +19,10 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
   })
 
 app.use(bodyParser.json())
-app.use('/api/blogs', blogRouter)
-
 app.use(cors())
 app.use(express.json())
+
+app.use('/api/blogs', blogRouter)
+app.use('/api/users', userRouter)
 
 module.exports = app

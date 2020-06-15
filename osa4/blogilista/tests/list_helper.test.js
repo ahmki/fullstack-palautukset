@@ -3,12 +3,15 @@ const supertest = require('supertest')
 const blogs = require('./for_testing').blogs
 const blog = require('./for_testing').oneBlog
 const blogDbContent = require('./for_testing').blogsInDb
+const userDbContent = require('./for_testing').usersInDb
 const mongoose = require('mongoose')
 const app = require('../app')
+const bcrypt = require('bcryptjs')
 
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 /*
 * Tehtävät 4.3 - 4.5 + 4.8 - 4.13
@@ -22,6 +25,7 @@ test('dummy returns one', () => {
   expect(result).toBe(1)
 })
 
+// LISTHELPERIN TESTIT
 describe('total likes', () => {
 
   test('test with one blog', () => {
@@ -40,6 +44,7 @@ describe('total likes', () => {
   })
 })
 
+// TIETOKANNAN TESTIT
 describe('tests for blogs in db', () => {
   // Poistetaan vanha tietokanta ja luodaan uusi ennen jokaista tietokannan testiä
   beforeEach(async () => {
@@ -135,6 +140,78 @@ describe('tests for blogs in db', () => {
   })
 })
 
+// KÄYTTÄJÄN LUOMISEN TESTIT
+describe('one user in db at start', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('creating a new valid user', async () => {
+    const newUser = {
+      username: 'hcjarmo666',
+      name: 'Jarmo Kauppinen',
+      password: 'salasana'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await userDbContent()
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+   
+  })
+
+  test('creating a new user with invalid username', async () => {
+    const usersAtStart = await userDbContent()
+    const newUser = {
+      username: '34',
+      name: 'Jarmo Kauppinen',
+      password: 'salasana'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('invalid username')
+
+    const usersAtEnd = await userDbContent()
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames.length).toBe(usersAtStart.length)
+  })
+
+  test('creating a new user with invalid password', async () => {
+    const usersAtStart = await userDbContent()
+    const newUser = {
+      username: 'jarmo1977',
+      name: 'Jarmo Kauppinen',
+      password: 's'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('invalid password')
+
+    const usersAtEnd = await userDbContent()
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames.length).toBe(usersAtStart.length)
+  })
+})
 
 afterAll(() => {
   mongoose.connection.close()
