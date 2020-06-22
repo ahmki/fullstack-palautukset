@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs/
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuYSIsImlkIjoiNWVmMGUzMTQyZTAzMGExYzhjMmM1NGIzIiwiaWF0IjoxNTkyODQ1MTA4fQ.nL81ENh4RxfQNBi8md-9xUpGFtJdBg7_wJyivBemRzw
 
 {
-    "title": "aaaaa",
-    "author": "karpo",
-    "url": "fdddd.com",
-    "likes": 6
+    "title": "argfgfgdf",
+    "author": "jarpo",
+    "url": "f234234234234.com",
+    "likes": 777
 }
