@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 const config = require('./utils/config')
 const blogRouter = require('./controllers/blogs')
+const loginRouter = require('./controllers/login')
 const userRouter = require('./controllers/users')
 const bodyParser = require('body-parser')
 
@@ -24,5 +25,6 @@ app.use(express.json())
 
 app.use('/api/blogs', blogRouter)
 app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 
 module.exports = app
