@@ -4,15 +4,16 @@ const User = require('../models/user')
 const logger = require('../utils/logger')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 
-const getToken = request => {
-  const authorization = request.get('authorization')
-  const authorizationValid = authorization.toLowerCase().startsWith('bearer ')
-  if (authorization && authorizationValid) {
-    return authorization.substring(7)
-  }
-  return null
-}
+// const getToken = request => {
+//   const authorization = request.get('authorization')
+//   const authorizationValid = authorization.toLowerCase().startsWith('bearer ')
+//   if (authorization && authorizationValid) {
+//     return authorization.substring(7)
+//   }
+//   return null
+// }
 
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog
@@ -24,10 +25,9 @@ blogRouter.get('/', async (request, response) => {
 blogRouter.post('/', async (request, response) => {
 
   const body = request.body
-  const token = getToken(request)
-  const decodedToken = jwt.verify(token, process.env.SECRET)
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
-  if (!token || !decodedToken.id) {
+  if (!decodedToken.id) {
     return response.status(401).json({
       error: 'invalid or missing token'
     })
@@ -61,8 +61,26 @@ blogRouter.post('/', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+  if (!decodedToken.id) {
+    return response.status(401).json({
+      error: 'invalid or missing token'
+    })
+  }
+  const blog = await Blog.findById(request.params.id)
+  console.log(blog, request.params)
+  if (blog.user.toString() === decodedToken.id.toString()) {
+    await Blog.findByIdAndRemove(request.params.id)
+    
+    response.status(204).end()
+  }
+  else {
+    response.status(401).json({
+      error: 'this is not your submission'
+    })
+  }
+
 })
 
 blogRouter.put('/:id', async (request, response) => {
@@ -76,5 +94,7 @@ blogRouter.put('/:id', async (request, response) => {
   const updatedNote = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true })
   response.json(updatedNote)
 })
+
+
 
 module.exports = blogRouter

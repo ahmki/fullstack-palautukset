@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs/
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuYSIsImlkIjoiNWVmMGUzMTQyZTAzMGExYzhjMmM1NGIzIiwiaWF0IjoxNTkyODQ1MTA4fQ.nL81ENh4RxfQNBi8md-9xUpGFtJdBg7_wJyivBemRzw
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuYTEyMyIsImlkIjoiNWVmMGZjMjA3Yjg0OTcxZWE0YjFlYmQ1IiwiaWF0IjoxNTkyODUxNTIzfQ.H9553-iS4KbmxCzWMXMdembBaI0VrUOcx-bF1GbYaz0
 
 {
-    "title": "argfgfgdf",
+    "title": "maramrarj",
     "author": "jarpo",
-    "url": "f234234234234.com",
-    "likes": 777
+    "url": "f4.com",
+    "likes": 766
 }
