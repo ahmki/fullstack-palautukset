@@ -3,11 +3,12 @@ import PropTypes from 'prop-types'
 
 const Blog = ({ blog, likeHandler, deleteHandler, currentUser }) => {
 
+  // Poistin likehandlerin ja deletehandlerin testien takia vaatimuksista
   Blog.propTypes = {
     blog: PropTypes.object.isRequired,
-    likeHandler: PropTypes.func.isRequired,
-    deleteHandler: PropTypes.func.isRequired,
-    currentUser: PropTypes.object.isRequired
+    currentUser: PropTypes.object.isRequired,
+    likeHandler: PropTypes.func,
+    deleteHandler: PropTypes.func
   }
 
   const [infoVisible, setInfoVisible] = useState(false)
@@ -77,7 +78,7 @@ const Blog = ({ blog, likeHandler, deleteHandler, currentUser }) => {
       <div style={hideWhenVisible}>
         <button onClick={toggleVisibility}>view</button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="togglableDiv">
         <button onClick={toggleVisibility}>hide</button>
         <p>{blog.url}</p>
         <p>{likes} <button onClick={addLike}>like</button></p>
