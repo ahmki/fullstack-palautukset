@@ -6,7 +6,7 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
-/* Tehtävät 5.1 - .10
+/* Tehtävät 5.1 - .12
 * Aleksi Heinimäki, aleksi.heinimaki1@gmail.com
 * Proptypet komponenteissa Blog, BlogForm ja Notification
 */
@@ -129,6 +129,7 @@ const App = () => {
         <div>
           username
           <input
+            id='username'
             type="text"
             value={username}
             name="Username"
@@ -138,13 +139,14 @@ const App = () => {
         <div>
           password
           <input
+            id='password'
             type="password"
             value={password}
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">login</button>
+        <button id="login" type="submit">login</button>
       </form>
     </div>
   )
