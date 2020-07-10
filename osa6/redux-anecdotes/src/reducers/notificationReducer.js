@@ -1,9 +1,7 @@
-
 const initialState = {
   text: '',
   display: false 
 }
-
 
 const notificationReducer = (state = initialState, action) => {
 
@@ -57,7 +55,6 @@ export const displayNotification = (text, sec) => {
       text
     })
 
-    // sekunnit millisekunneiksi
     const ms = sec * 1000
     setTimeout(() => {
       dispatch({
