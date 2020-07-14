@@ -1,130 +1,80 @@
-import React, { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import React, { useState, useEffect } from 'react'
 import Notification from './components/Notification'
-import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
-
-/* Tehtävät 5.1 - .12
+import { useDispatch, useSelector } from 'react-redux'
+import { displayNotification } from './reducers/notificationReducer'
+import { initializeBlogs } from './reducers/blogReducer'
+import { setLoggedUser, setUser } from './reducers/userReducer'
+import BlogList from './components/BlogList'
+import UserList from './components/UserList'
+import { initializeUsers } from './reducers/allUsersReducer'
+import {
+  Switch, Route
+} from 'react-router-dom'
+/* Tehtävät 7
 * Aleksi Heinimäki, aleksi.heinimaki1@gmail.com
-* Proptypet komponenteissa Blog, BlogForm ja Notification
+*
 */
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [notification, setNotification] = useState(null)
+
+  const dispatch = useDispatch()
+  const blogs = useSelector(state => state.blog)
+  const user = useSelector(state => state.user)
 
   // Kirjautumisen hookit
-  const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const blogFormRef = useRef()
-
+  // Kayttajien haku
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
-  }, [])
+    dispatch(initializeUsers())
+  }, [dispatch])
 
+  // Blogien haku
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
+
+  // Kirjautuneen kayttajan haku
   useEffect(() => {
     const loggedUserFromLs = window.localStorage.getItem('loggedUser')
     if (loggedUserFromLs) {
-      setUser(JSON.parse(loggedUserFromLs))
+      dispatch(setUser(JSON.parse(loggedUserFromLs)))
     }
-  }, [])
-
-  const notificationSetter = (message, type) => {
-    setNotification({ message, type })
-    setTimeout(() => {
-      setNotification(null)
-    }, 5500)
-  }
+  }, [dispatch])
 
   const loginHandler = async (e) => {
     e.preventDefault()
-    console.log('logging', username, password)
 
     try {
-      const user = await loginService.login({ username, password })
+      dispatch(setLoggedUser({ username, password }))
 
-      window.localStorage.setItem('loggedUser', JSON.stringify(user))
-
-      setUser(user)
-      console.log(user)
       setUsername('')
       setPassword('')
     }
     catch(exception) {
       console.log('wrong credentials')
-      notificationSetter('wrong username or password', 'error')
+      const notification = {
+        message: 'wrong username or password',
+        class: 'error'
+      }
+      dispatch(displayNotification(notification, 5))
     }
   }
 
   const logoutHandler = () => {
     window.localStorage.removeItem('loggedUser')
 
-    setUser(null)
+    dispatch(setUser(null))
     setUsername('')
     setPassword('')
   }
 
-  const newBlogHandler = async (blogObject) => {
 
-    console.log('saving blog', blogObject)
-    blogFormRef.current.toggleVisibility()
-    const newBlog = {
-      title: blogObject.title,
-      author: blogObject.author,
-      url: blogObject.url,
-      user: user
-    }
-
-    try {
-      await blogService.postBlog(newBlog)
-      notificationSetter(`successfully added ${newBlog.title}`, 'success')
-    }
-
-    catch(exception) {
-      console.log(exception)
-      notificationSetter('error adding a new blog', 'error')
-    }
-  }
-
-  const likeHandler = async (blogObject) => {
-    const updatedBlog = {
-      id: blogObject.id,
-      title: blogObject.title,
-      likes: blogObject.likes,
-      author: blogObject.author,
-      url: blogObject.url,
-      user: blogObject.user
-    }
-
-    try {
-      await blogService.putLike(updatedBlog)
-    }
-
-    catch(exception) {
-      console.log(exception)
-    }
-  }
-
-  const deleteHandler = async (blogObject) => {
-    console.log('deleting ', blogObject)
-
-    try {
-      await blogService.deleteBlog(blogObject)
-    }
-    catch (exception) {
-      console.log(exception)
-    }
-  }
   const loginForm = () => (
     <div>
       <h1>log in to application</h1>
-      <Notification notification={notification} />
+      <Notification />
       <form onSubmit={loginHandler}>
         <div>
           username
@@ -154,30 +104,19 @@ const App = () => {
   const blogForm = () => (
     <div>
       <h2>blogs</h2>
-      <Notification notification={notification} />
+      <Notification />
       <p>{user.name} logged in</p>
       <button onClick={logoutHandler}>logout</button>
 
-      <h2>create new</h2>
-
-      <Togglable buttonLabel='new blog' ref={blogFormRef}>
-        <BlogForm
-          newBlogHandler={newBlogHandler}
-        />
-      </Togglable>
-      {// Järjestää blogit tykkäysten mukaan, sen jälkeen renderöi ne
-      }
-      {blogs.sort((a, b) => b.likes - a.likes)
-        .map(blog =>
-          <Blog key={blog.id}
-            blog={blog}
-            likeHandler={likeHandler}
-            deleteHandler={deleteHandler}
-            currentUser={user}
-          />
-        )}
+      <Switch>
+        <Route path="/users">
+          <UserList />
+        </Route>
+        <Route path ="/">
+          <BlogList user={user} blogs={blogs} />
+        </Route>
+      </Switch>
     </div>
-
   )
 
   return (

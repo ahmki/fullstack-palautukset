@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { addNewBlog } from '../reducers/blogReducer'
+import { displayNotification } from '../reducers/notificationReducer'
 
-const BlogForm = ({ newBlogHandler }) => {
+const BlogForm = ({ user }) => {
 
-  BlogForm.propTypes = {
-    newBlogHandler: PropTypes.func.isRequired
-  }
+  const dispatch = useDispatch()
 
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
@@ -13,11 +13,17 @@ const BlogForm = ({ newBlogHandler }) => {
 
   const addBlog = (e) => {
     e.preventDefault()
-    newBlogHandler({
+    dispatch(addNewBlog({
       title: blogTitle,
       author: blogAuthor,
-      url: blogUrl
-    })
+      url: blogUrl,
+      user: user
+    }))
+    const notification = {
+      message: `successfully added ${blogTitle}`,
+      class: 'success'
+    }
+    dispatch(displayNotification(notification, 5))
     setBlogUrl('')
     setBlogTitle('')
     setBlogAuthor('')

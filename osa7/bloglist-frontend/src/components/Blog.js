@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { deleteBlog, likeBlog } from '../reducers/blogReducer'
+import { displayNotification } from '../reducers/notificationReducer'
 
-const Blog = ({ blog, likeHandler, deleteHandler, currentUser }) => {
+const Blog = ({ blog, currentUser }) => {
+
+  const dispatch = useDispatch()
 
   // Poistin likehandlerin ja deletehandlerin testien takia vaatimuksista
   Blog.propTypes = {
@@ -13,9 +18,6 @@ const Blog = ({ blog, likeHandler, deleteHandler, currentUser }) => {
 
   const [infoVisible, setInfoVisible] = useState(false)
   const [removeVisible, setRemoveVisible] = useState(false)
-
-  // Tykkäysten tila ettei sivua tarvi ladata uudelleen tykkäyksen jälkeen
-  const [likes, setLikes] = useState(blog.likes)
 
   const hideWhenVisible = { display: infoVisible ? 'none' : '' }
   const showWhenVisible = { display: infoVisible ? '' : 'none' }
@@ -46,27 +48,31 @@ const Blog = ({ blog, likeHandler, deleteHandler, currentUser }) => {
 
   const addLike = (e) => {
     e.preventDefault()
-    setLikes(likes + 1)
-    likeHandler({
+    dispatch(likeBlog({
       id: blog.id,
       title: blog.title,
-      likes: likes,
+      likes: blog.likes + 1,
       author: blog.author,
       url: blog.url
-    })
+    }))
   }
 
-  const deleteBlog = (e) => {
+  const blogDeleter = (e) => {
     e.preventDefault()
     if (window.confirm(`Remove blog ${blog.title}`)) {
-      deleteHandler({
+      dispatch(deleteBlog({
         id: blog.id,
         title: blog.title,
         likes: blog.likes,
         author: blog.author,
         url: blog.url,
         user: currentUser
-      })
+      }))
+      const notification = {
+        message: `successfully removed ${blog.title}`,
+        class: 'success'
+      }
+      dispatch(displayNotification(notification, 4))
     }
   }
 
@@ -81,9 +87,9 @@ const Blog = ({ blog, likeHandler, deleteHandler, currentUser }) => {
       <div style={showWhenVisible} className="togglableDiv">
         <button onClick={toggleVisibility}>hide</button>
         <p>{blog.url}</p>
-        <p id='likes'>{likes}</p><button id='like' onClick={addLike}>like</button>
+        <p id='likes'>{blog.likes}</p><button id='like' onClick={addLike}>like</button>
         <p>{blog.user.name}</p>
-        <button id='remove' style={hideRemoveWhenVisible} onClick={deleteBlog}>remove</button>
+        <button id='remove' style={hideRemoveWhenVisible} onClick={blogDeleter}>remove</button>
       </div>
     </div>
   )
