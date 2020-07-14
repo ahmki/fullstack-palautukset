@@ -38,6 +38,10 @@ router.put('/:id', async (request, response) => {
   response.json(updatedBlog.toJSON())
 })
 
+router.post('/:id/comments', async(request, response) => {
+  const blog = request.body
+})
+
 router.post('/', async (request, response) => {
   const blog = new Blog(request.body)
 

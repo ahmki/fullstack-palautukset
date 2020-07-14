@@ -5,10 +5,12 @@ import { displayNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import { setLoggedUser, setUser } from './reducers/userReducer'
 import BlogList from './components/BlogList'
+import Blog from './components/Blog'
+import User from './components/User'
 import UserList from './components/UserList'
 import { initializeUsers } from './reducers/allUsersReducer'
 import {
-  Switch, Route
+  Switch, Route, Link
 } from 'react-router-dom'
 /* Tehtävät 7
 * Aleksi Heinimäki, aleksi.heinimaki1@gmail.com
@@ -20,7 +22,6 @@ const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blog)
   const user = useSelector(state => state.user)
-
   // Kirjautumisen hookit
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -28,7 +29,7 @@ const App = () => {
   // Kayttajien haku
   useEffect(() => {
     dispatch(initializeUsers())
-  }, [dispatch])
+  })
 
   // Blogien haku
   useEffect(() => {
@@ -70,6 +71,13 @@ const App = () => {
     setPassword('')
   }
 
+  // const matchedUser = match
+  //   ? users.find(u => u.id === match.params.id)
+  //   : null
+
+  const padding = {
+    paddingRight: 5
+  }
 
   const loginForm = () => (
     <div>
@@ -105,10 +113,18 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification />
+      <Link style={padding} to="/">blogs</Link>
+      <Link style={padding} to="/users">users</Link>
       <p>{user.name} logged in</p>
       <button onClick={logoutHandler}>logout</button>
 
       <Switch>
+        <Route path="/users/:id">
+          <User />
+        </Route>
+        <Route path="/blogs/:id">
+          <Blog />
+        </Route>
         <Route path="/users">
           <UserList />
         </Route>
@@ -125,7 +141,6 @@ const App = () => {
         loginForm() :
         blogForm()
       }
-
     </div>
   )
 }

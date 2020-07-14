@@ -1,49 +1,32 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { deleteBlog, likeBlog } from '../reducers/blogReducer'
 import { displayNotification } from '../reducers/notificationReducer'
+import { useParams } from 'react-router-dom'
+import { changeRemoveButtonState } from '../reducers/removeButtonReducer'
 
-const Blog = ({ blog, currentUser }) => {
-
+const Blog = () => {
+  const blogs = useSelector(state => state.blog)
+  const user = useSelector(state => state.user)
+  const removeVisible = useSelector(state => state.removeButton)
   const dispatch = useDispatch()
-
-  // Poistin likehandlerin ja deletehandlerin testien takia vaatimuksista
-  Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    likeHandler: PropTypes.func,
-    deleteHandler: PropTypes.func
-  }
-
-  const [infoVisible, setInfoVisible] = useState(false)
-  const [removeVisible, setRemoveVisible] = useState(false)
-
-  const hideWhenVisible = { display: infoVisible ? 'none' : '' }
-  const showWhenVisible = { display: infoVisible ? '' : 'none' }
 
   const hideRemoveWhenVisible = { display: removeVisible ? '' : 'none' }
 
-  const toggleVisibility = () => {
-    setInfoVisible(!infoVisible)
+  const id = useParams().id
 
-    // kannattaisi varmaan käyttää käyttäjän id:tä, vaikka myös käyttäjänimi on
-    // yksilöllinen
-    if (currentUser.username === blog.user.username) {
-      setRemoveVisible(true)
-    }
-    else {
-      setRemoveVisible(false)
-    }
+  if (!user && !blogs) {
+    return null
   }
 
+  const blog = blogs.find(b => b.id === id)
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
+  if (!blog) {
+    return null
+  }
+
+  if (blog.user.username === user.username) {
+    dispatch(changeRemoveButtonState(true))
   }
 
   const addLike = (e) => {
@@ -66,7 +49,7 @@ const Blog = ({ blog, currentUser }) => {
         likes: blog.likes,
         author: blog.author,
         url: blog.url,
-        user: currentUser
+        user: user
       }))
       const notification = {
         message: `successfully removed ${blog.title}`,
@@ -77,20 +60,14 @@ const Blog = ({ blog, currentUser }) => {
   }
 
   return (
-    <div id='blog' style={blogStyle}>
+    <div id='blog'>
       <div>
-        {blog.title} {blog.author}
+        <h1>{blog.title} {blog.author}</h1>
       </div>
-      <div style={hideWhenVisible}>
-        <button id='view' onClick={toggleVisibility}>view</button>
-      </div>
-      <div style={showWhenVisible} className="togglableDiv">
-        <button onClick={toggleVisibility}>hide</button>
-        <p>{blog.url}</p>
-        <p id='likes'>{blog.likes}</p><button id='like' onClick={addLike}>like</button>
-        <p>{blog.user.name}</p>
-        <button id='remove' style={hideRemoveWhenVisible} onClick={blogDeleter}>remove</button>
-      </div>
+      <p>{blog.url}</p>
+      <p id='likes'>{blog.likes} likes</p><button id='like' onClick={addLike}>like</button>
+      <p>Added by {blog.user.name}</p>
+      <button id='remove' style={hideRemoveWhenVisible} onClick={blogDeleter}>remove</button>
     </div>
   )
 }
