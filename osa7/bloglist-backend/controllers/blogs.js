@@ -7,7 +7,6 @@ router.get('/', async (request, response) => {
   const blogs = await Blog
     .find({}).populate('user', { username: 1, name: 1 })
 
-  console.log('getting blogs')
   response.json(blogs)
 })
 
@@ -39,7 +38,9 @@ router.put('/:id', async (request, response) => {
 })
 
 router.post('/:id/comments', async(request, response) => {
-  const blog = request.body
+  const commentedBlog = await Blog.findByIdAndUpdate(request.params.id, 
+    { $addToSet: { comments: [ request.body.comment ] } } )
+  response.json(commentedBlog.toJSON())
 })
 
 router.post('/', async (request, response) => {

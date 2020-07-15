@@ -33,11 +33,17 @@ const putLike = blog => {
   return request.then(response => response.data)
 }
 
+const commentBlog = (comment, id) => {
+  const url = baseUrl + '/' + id + '/comments'
+
+  const request = axios.post(url, { comment: comment })
+  return request.then(response => response.data)
+}
+
 const deleteBlog = blog => {
   const config = {
     headers: { Authorization: 'Bearer ' + blog.user.token }, }
   const url = baseUrl + '/' + blog.id
-  console.log(url, blog.user.token)
   const request = axios.delete(url, config,
     {
       title: blog.title,
@@ -49,4 +55,4 @@ const deleteBlog = blog => {
   return request.then(response => response.data)
 }
 
-export default { getAll, postBlog, putLike, deleteBlog }
+export default { getAll, postBlog, putLike, deleteBlog, commentBlog }

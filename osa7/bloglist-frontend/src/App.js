@@ -12,6 +12,7 @@ import { initializeUsers } from './reducers/allUsersReducer'
 import {
   Switch, Route, Link
 } from 'react-router-dom'
+import { Navbar, Nav, Button, Form } from 'react-bootstrap'
 /* Tehtävät 7
 * Aleksi Heinimäki, aleksi.heinimaki1@gmail.com
 *
@@ -44,6 +45,7 @@ const App = () => {
     }
   }, [dispatch])
 
+  // Kirjautumisen kasittelija
   const loginHandler = async (e) => {
     e.preventDefault()
 
@@ -71,52 +73,55 @@ const App = () => {
     setPassword('')
   }
 
-  // const matchedUser = match
-  //   ? users.find(u => u.id === match.params.id)
-  //   : null
-
   const padding = {
     paddingRight: 5
   }
 
   const loginForm = () => (
     <div>
-      <h1>log in to application</h1>
+      <h2>log in to application</h2>
       <Notification />
-      <form onSubmit={loginHandler}>
-        <div>
-          username
-          <input
+      <Form onSubmit={loginHandler}>
+        <Form.Group>
+          <Form.Label>username</Form.Label>
+          <Form.Control
+            placeholder="username"
             id='username'
             type="text"
             value={username}
             name="Username"
             onChange={({ target }) => setUsername(target.value)}
           />
-        </div>
-        <div>
-          password
-          <input
+          <Form.Label>password</Form.Label>
+          <Form.Control
+            placeholder="password"
             id='password'
             type="password"
             value={password}
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
-        </div>
-        <button id="login" type="submit">login</button>
-      </form>
+        </Form.Group>
+        <Button variant="primary" id="login" type="submit">login</Button>
+      </Form>
     </div>
   )
 
   const blogForm = () => (
     <div>
-      <h2>blogs</h2>
+      <Navbar bg="light">
+        <Nav className="mr-auto">
+          <Nav.Link href="#" as="span">
+            <Link style={padding} to="/">blogs</Link>
+          </Nav.Link>
+          <Nav.Link href="#" as="span">
+            <Link style={padding} to="/users">users</Link>
+          </Nav.Link>
+        </Nav>
+      </Navbar>
       <Notification />
-      <Link style={padding} to="/">blogs</Link>
-      <Link style={padding} to="/users">users</Link>
       <p>{user.name} logged in</p>
-      <button onClick={logoutHandler}>logout</button>
+      <Button variant="secondary" onClick={logoutHandler}>logout</Button>
 
       <Switch>
         <Route path="/users/:id">
@@ -136,7 +141,7 @@ const App = () => {
   )
 
   return (
-    <div>
+    <div className="container">
       {user === null ?
         loginForm() :
         blogForm()

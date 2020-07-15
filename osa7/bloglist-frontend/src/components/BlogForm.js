@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addNewBlog } from '../reducers/blogReducer'
 import { displayNotification } from '../reducers/notificationReducer'
+import { Button } from 'react-bootstrap'
 
 const BlogForm = ({ user }) => {
 
@@ -60,7 +61,7 @@ const BlogForm = ({ user }) => {
           onChange={({ target }) => setBlogUrl(target.value)}
         />
       </div>
-      <button id="create" type="submit">create</button>
+      <Button variant="primary" id="create" type="submit">create</Button>
     </form>
   )
 }
