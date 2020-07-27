@@ -1,5 +1,8 @@
 const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid')
+const mongoose = require('mongoose')
+const Author = require('./models/author')
+const Book = require('./models/book')
 
 let authors = [
   {
@@ -79,11 +82,23 @@ let books = [
   },
 ]
 
+mongoose.set('useFindAndModify', false)
+const MONGODB_URI = 'mongodb+srv://fullstack:fullstack1@cluster0-wai6t.mongodb.net/graphql?retryWrites=true&w=majority'
+console.log('connecting', MONGODB_URI)
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('connected mongo')
+  })
+  .catch((error) => {
+    console.log('error connecting', error.message)
+  })
+
 const typeDefs = gql`
   type Book {
     title: String!
     published: Int
-    author: String!
+    author: Author!
     id: ID!
     genres: [String!]!
   }
@@ -155,21 +170,24 @@ const resolvers = {
   Mutation: {
     addBook: (root, args) => {
 
+      console.log('adding', ...args)
       if (!(authors.find(a => a.name === args.author))) {
-        const author = {
+        const author = new Author({
           name: args.author,
           born: null,
           id: uuid()
-        }
-        authors = authors.concat(author)
+        })
+        author.save()
       }
 
-      const book = {
-        ...args, 
-        id: uuid()
+      const book = new Book({ ...args })
+      console.log('saving')
+      try {
+        return book.save()
       }
-      books = books.concat(book)
-      return book
+      catch(error) {
+        console.log(error.message)
+      }
     },
     editAuthor: (root, args) => {
       
