@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "timo nahka",
+  "ssn": "010142-2514",
+  "dateOfBirth": "01-01-1942",
+  "gender": "male",
+  "occupation": "homeless man"
+}
