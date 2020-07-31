@@ -3,7 +3,7 @@ import { CoursePart } from '../index';
 import Part from './Part';
 
 interface ContentProps {
-  courseParts: CoursePart[] 
+  courseParts: CoursePart[];
 }
 
 const Content: React.FC<ContentProps> = ({ courseParts }) => {

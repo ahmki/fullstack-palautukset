@@ -10,7 +10,7 @@ interface CoursePartBase {
   exerciseCount: number;
 } 
 interface CoursePartBaseDesc extends CoursePartBase {
-  description: string
+  description: string;
 }
 interface CoursePartOne extends CoursePartBaseDesc {
   name: "Fundamentals";

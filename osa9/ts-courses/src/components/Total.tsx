@@ -6,7 +6,7 @@ type Course = {
 }
 
 interface TotalProps {
-  courseParts: Array<Course>
+  courseParts: Array<Course>;
 }
 
 const Total: React.FC<TotalProps> = ({ courseParts }) => {
