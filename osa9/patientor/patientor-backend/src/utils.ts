@@ -1,16 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Patient, Gender } from './types';
+import { Patient, Gender, Entry, HealthCheckRating, Discharge } from './types';
+
+/*
+* VALIDATION FOR PATIENTS
+*/
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const newPatientEntryValidation = (object: any): Patient => {
+export const newPatientEntryValidation = (object: any): Patient => {
   const newEntry: Patient = {
     id: String(Math.random() * 100000),
     name: parseName(object.name),
     ssn: parseSsn(object.ssn),
     dateOfBirth: parseDate(object.dateOfBirth),
     gender: parseGender(object.gender),
-    occupation: parseOccupation(object.occupation)
+    occupation: parseOccupation(object.occupation),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    entries: object.entries
   };
 
   return newEntry;
@@ -72,4 +78,100 @@ const isGender = (gender: any): gender is Gender => {
   return Object.values(Gender).includes(gender);
 };
 
-export default newPatientEntryValidation;
+/*
+* VALIDATION FOR ENTRIES
+*/
+
+const isEntry = (type: string): boolean => {
+  return type === 'HealthCheck' || type === 'Hospital' || type === 'OccupationalHealthCare';
+};
+
+const isRating = (rating: any): rating is HealthCheckRating => {
+  return Object.values(HealthCheckRating).includes(rating);
+};
+
+const isDischarge = (discharge: any): boolean => {
+  if (!isDate(discharge.date) || !isString(discharge.criteria)) {
+    return false;
+  }
+  return true;
+};
+/*
+* Validates all required fields
+*/
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const newEntryValidation = (object: any): Entry => {
+
+  switch (parseEntry(object.type)) {
+    case "HealthCheck":
+      const newHealthCheckEntry = {
+        id: String(Math.random() * 100000),
+        description: parseDescription(object.description),
+        date: parseDate(object.date),
+        specialist: parseName(object.specialist),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        type: object.type,
+        healthCheckRating: parseRating(object.healthCheckRating)
+      };
+      return newHealthCheckEntry;
+    
+    case "OccupationalHealthCare":
+      const newOccupationalHealthCareEntry = {
+        id: String(Math.random() * 100000),
+        description: parseDescription(object.description),
+        date: parseDate(object.date),
+        specialist: parseName(object.specialist),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        type: object.type,
+        employerName: parseName(object.employerName)
+      };
+      return newOccupationalHealthCareEntry;
+    
+    case "Hospital":
+      const newHospitalEntry = {
+        id: String(Math.random() * 100000),
+        description: parseDescription(object.description),
+        date: parseDate(object.date),
+        specialist: parseName(object.specialist),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        type: object.type,
+        discharge: parseDischarge(object.discharge)
+      };
+      return newHospitalEntry;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return object;
+};
+
+const parseEntry = (entry: any): string => {
+  if (!entry || !isString(entry) || !isEntry(entry)) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    throw new Error(`Incorrect or missing entry type ${entry}`);
+  }
+  return entry;
+};
+
+const parseDescription = (desc: string): string => {
+  if (!desc || !isString(desc)) {
+    throw new Error(`Incorrect or missing description ${desc}`);
+  }
+  return desc;
+};
+
+const parseRating = (rating: any): HealthCheckRating => {
+  if (!rating || !isRating(rating)) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    throw new Error(`Incorrect or missing health rating ${rating}`);
+  }
+  return rating;
+};
+
+const parseDischarge = (discharge: any): Discharge => {
+  if (!discharge.date || !discharge.criteria || !isDischarge(discharge)) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    throw new Error(`Incorrect or missing discharge data ${discharge}`);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return discharge;
+};
