@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 const typeDefs = gql`
   type Book {
     title: String!
-    published: Int!
+    published: Int
     author: Author!
     id: ID!
     genres: [String!]!
@@ -76,16 +76,18 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: (root, args) => {
+    allBooks: async (root, args) => {
       if (!args.author && !args.genre) {
-        return Book.find({})
+        const books = await Book.find({}).populate('author')
+        return books
       }
   
       // const filterByAuthor = (args) => {
       //  return books.filter(b => b.author === args.author)
       //}
-      const filterByGenre = (args) => {
-        return Book.find({ genres: { $in: [args.genre] } })
+      const filterByGenre = async (args) => {
+        const books = await Book.find({ genres: { $in: [args.genre] } }).populate('author')
+        return books
       }
 
       // if (args.author && !args.genre) {
@@ -101,7 +103,7 @@ const resolvers = {
       //  return genres.filter(genre => authors.includes(genre))
       //}
     },
-    allAuthors: () => Author.find({}),
+    allAuthors: async () => await Author.find({}),
     me: (root, args, context) => context.currentUser
   
   },
@@ -119,7 +121,7 @@ const resolvers = {
         throw new AuthenticationError('authentication failed')
       }
 
-      if (!(Author.find({ name: args.author }))[0]) {
+      if (!(await Author.findOne({ name: args.author }))) {
         
          const author = new Author({
           name: args.author,
@@ -136,15 +138,16 @@ const resolvers = {
       }
 
       const author = await Author.find({ name: args.author })
-
+      console.log('author :>> ', author);
       const book = new Book({ 
         title: args.title,
         genres: args.genres,
-        author: author[0]
+        author: author[0]._id
       })
-      console.log('saving', book)
 
+      book.populate('author')
       try {
+        console.log('book :>> ', book);
         return await book.save()
       }
       catch(error) {
