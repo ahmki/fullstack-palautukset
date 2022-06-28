@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import Course from './components/Course'
 
 /* Tehtävät 2.1 - 2.5
-* aleksi.heinimaki1@gmail.com
 */
 
 const App = () => {
