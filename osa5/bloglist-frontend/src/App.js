@@ -7,7 +7,6 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
 /* Tehtävät 5.1 - .12
-* Aleksi Heinimäki, aleksi.heinimaki1@gmail.com
 * Proptypet komponenteissa Blog, BlogForm ja Notification
 */
 
