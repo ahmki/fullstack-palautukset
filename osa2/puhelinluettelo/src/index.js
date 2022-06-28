@@ -4,7 +4,6 @@ import './index.css'
 import personService from './services/persons'
 
 /* Tehtävät 2.6 - 2.10 + 2.15 - 2.19
-* Aleksi Heinimäki, aleksi.heinimaki1@gmail.com
 */
 
 const Number = (props) => {
