@@ -1,7 +1,6 @@
 import React from 'react'
 
 /* Tehtävien 2.1 - 2.5 komponentit
-* aleksi.heinimaki1@gmail.com
 */
 
 // Komponentti vastaa headereiden renderöinnistä
