@@ -4,7 +4,7 @@ import diagnoseRouter from './routes/diagnoses';
 import patientRouter from './routes/patients';
 
 /*
-* Fullstackopen 2020, aleksi.heinimaki1@gmail.com
+* Fullstackopen 2020
 * exercises 9.8 - 9.13
 */
 
