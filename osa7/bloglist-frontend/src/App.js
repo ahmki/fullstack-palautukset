@@ -14,7 +14,6 @@ import {
 } from 'react-router-dom'
 import { Navbar, Nav, Button, Form } from 'react-bootstrap'
 /* Tehtävät 7
-* Aleksi Heinimäki, aleksi.heinimaki1@gmail.com
 *
 */
 
